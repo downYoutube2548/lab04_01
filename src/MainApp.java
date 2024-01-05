@@ -1,4 +1,4 @@
-public class MainApp {
+public final class MainApp {
     public static void main(String[] args) {
         AccountRegistry registry = new AccountRegistry();
         registry.addAccount(new Account(100.));

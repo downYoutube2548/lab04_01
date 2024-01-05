@@ -1,13 +1,14 @@
 import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 public class AccountRegistry {
     private ArrayList<Account> accounts = new ArrayList<Account>();
 
-    private int countActiveAccounts() {
+    private int countActiveAccounts(Account.Status status) {
         int count = 0;
         for (Account account: accounts)
-            if (account.getStatus() == Account.Status.ACTIVE)
+            if (account.getStatus() == status)
                 count++;
         return count;
     }
@@ -20,6 +21,7 @@ public class AccountRegistry {
     }
 
     public Account getAccount(String accountNumber) {
+
         for (Account account: accounts)
             if (account.getAccountNumber().equals(accountNumber))
                 return account;
@@ -27,13 +29,20 @@ public class AccountRegistry {
     }
 
     public Account[] listAccounts() {
-        Account[] results = new Account[countActiveAccounts()];
+        return listAccounts(Account.Status.ACTIVE);
+    }
 
-        int idx = 0;
-        for (Account account: accounts)
-            if (account.getStatus() == Account.Status.ACTIVE)
-                results[idx++] = account;
+    public Account[] listAccounts(Account.Status status) {
+        Account[] output = new Account[countActiveAccounts(status)];
 
-        return results;
+        int i = 0;
+        for (Account acc : accounts) {
+            if (acc.getStatus() == status) {
+                output[i] = acc;
+                i++;
+            }
+        }
+
+        return output;
     }
 }

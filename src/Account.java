@@ -1,5 +1,5 @@
 public class Account {
-    public enum Status { ACTIVE, CLOSED };
+    public enum Status { ACTIVE, CLOSED, SUSPENDED};
 
     private static final String ACCOUNT_PREFIX = "1234";
     private static int nextId = 1;
@@ -20,22 +20,24 @@ public class Account {
         this.status = Status.ACTIVE;
     }
 
-    public void deposit(double amount) {
+    public Account deposit(double amount) {
         if (status != Status.ACTIVE)
-            throw new IllegalStateException("Account is inactive.");
+            throw new IllegalStateException("Account is unavailable.");
         else if (amount <= 0.)
             throw new IllegalArgumentException("Amount must be positive.");
         else
             balance += amount;
+        return this;
     }
 
-    public void withdraw(double amount) {
+    public Account withdraw(double amount) {
         if (status != Status.ACTIVE)
-            throw new IllegalStateException("Account is inactive.");
+            throw new IllegalStateException("Account is unavailable.");
         else if (amount <= 0. || amount > balance)
             throw new IllegalArgumentException("Amount must be positive and not exceeding balance.");
         else
             balance -= amount;
+        return this;
     }
 
     public void close() {
@@ -59,5 +61,26 @@ public class Account {
 
     public static String getNextAccountNumber() {
         return String.format("%s-%04d", ACCOUNT_PREFIX, nextId);
+    }
+
+    public void suspend() {
+        status = Status.SUSPENDED;
+    }
+
+    public void reactivate() {
+        status = Status.ACTIVE;
+    }
+
+    public boolean isActive() {
+        return status == Status.ACTIVE;
+    }
+
+    public Account transferTo(Account destAcc, double amount) {
+        if (!this.isActive() || !destAcc.isActive()) {
+            throw new IllegalStateException("Account is unavailable.");
+        }
+        this.withdraw(amount);
+        destAcc.deposit(amount);
+        return this;
     }
 }
